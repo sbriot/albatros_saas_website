@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Albatros — Le carnet de bord de votre club</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;0,700;0,900;1,500;1,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#172431;
+    --ink-soft:#2c3d4d;
+    --paper:#EDE7D8;
+    --paper-dim:#E2DAC6;
+    --brass:#A6813F;
+    --verdigris:#5C7B6C;
+    --buoy:#B33F32;
+    --rule:#C9C0AC;
+    --rule-dark:#3c5163;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{
+    font-family:'Fraunces', serif;
+    margin:0;
+    letter-spacing:-0.01em;
+  }
+  .mono{font-family:'IBM Plex Mono', monospace;}
+  a{color:inherit;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 28px;}
+
+  /* NAV */
+  nav{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:22px 28px;
+    border-bottom:1px solid var(--rule);
+  }
+  .brand{display:flex;align-items:baseline;gap:10px;}
+  .brand-mark{font-family:'Fraunces', serif;font-weight:700;font-size:22px;}
+  .brand-tag{font-size:12px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;letter-spacing:.04em;}
+  .nav-cta{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    padding:9px 16px;
+    background:var(--ink);
+    color:var(--paper);
+    border-radius:2px;
+    text-decoration:none;
+    white-space:nowrap;
+  }
+
+  /* HERO */
+  .hero{
+    padding:72px 0 64px;
+    border-bottom:1px solid var(--rule);
+  }
+  .hero-grid{
+    display:grid;
+    grid-template-columns:1.1fr 0.9fr;
+    gap:56px;
+    align-items:center;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--verdigris);
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    display:flex;align-items:center;gap:10px;
+    margin-bottom:18px;
+  }
+  .eyebrow::before{
+    content:"";width:20px;height:1px;background:var(--verdigris);display:inline-block;
+  }
+  .hero h1{
+    font-size:clamp(34px, 5vw, 54px);
+    font-weight:700;
+    line-height:1.06;
+  }
+  .hero h1 em{
+    font-style:italic;
+    font-weight:500;
+    color:var(--brass);
+  }
+  .hero p.lede{
+    margin-top:22px;
+    font-size:18px;
+    max-width:46ch;
+    color:var(--ink-soft);
+  }
+  .cta-row{margin-top:32px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;}
+  .btn-primary{
+    background:var(--ink);color:var(--paper);
+    padding:14px 24px;border-radius:2px;text-decoration:none;
+    font-family:'IBM Plex Mono',monospace;font-size:14px;
+    display:inline-block;
+    border:1px solid var(--ink);
+    transition:transform .15s ease;
+  }
+  .btn-primary:hover{transform:translateY(-1px);}
+  .btn-ghost{
+    text-decoration:none;color:var(--ink);
+    font-family:'IBM Plex Mono',monospace;font-size:14px;
+    border-bottom:1px solid var(--brass);
+    padding-bottom:2px;
+  }
+
+  /* LEDGER WIDGET */
+  .ledger-card{
+    background:#fff;
+    border:1px solid var(--rule);
+    box-shadow:6px 6px 0 var(--paper-dim);
+    padding:0;
+    position:relative;
+  }
+  .ledger-head{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:14px 18px;
+    border-bottom:1px dashed var(--rule);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:var(--ink-soft);
+    letter-spacing:.05em;
+  }
+  .ledger-dot{width:7px;height:7px;border-radius:50%;background:var(--verdigris);display:inline-block;margin-right:6px;}
+  .ledger-body{padding:20px 18px 24px;min-height:210px;}
+  .ledger-line{
+    display:flex;justify-content:space-between;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    padding:9px 0;
+    border-bottom:1px solid #f0ece0;
+    color:var(--ink-soft);
+  }
+  .ledger-line b{color:var(--ink);font-weight:600;}
+  #typed-name{border-right:2px solid var(--brass);padding-right:2px;}
+  .stamp{
+    position:absolute;
+    right:20px; bottom:20px;
+    border:2px solid var(--verdigris);
+    color:var(--verdigris);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    padding:5px 10px;
+    border-radius:3px;
+    transform:rotate(-8deg);
+    opacity:0;
+    letter-spacing:.05em;
+    transition:opacity .3s ease;
+  }
+  .stamp.show{opacity:1;}
+
+  /* SECTION GENERIC */
+  section{padding:76px 0;border-bottom:1px solid var(--rule);}
+  .section-label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;color:var(--verdigris);
+    text-transform:uppercase;letter-spacing:.08em;
+    margin-bottom:14px;
+  }
+  .section-title{
+    font-size:clamp(26px,3.4vw,36px);
+    font-weight:700;
+    max-width:20ch;
+  }
+  .section-sub{
+    margin-top:16px;color:var(--ink-soft);font-size:16.5px;max-width:58ch;
+  }
+
+  /* PROBLEM */
+  .before-after{
+    margin-top:44px;
+    display:grid;grid-template-columns:1fr 1fr;gap:28px;
+  }
+  .paper-scrap{
+    background:var(--paper-dim);
+    border:1px dashed var(--rule);
+    padding:22px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    color:var(--ink-soft);
+    position:relative;
+  }
+  .paper-scrap.crossed{text-decoration:line-through;text-decoration-color:var(--buoy);}
+  .paper-scrap .tag{
+    display:block;font-family:'IBM Plex Sans',sans-serif;
+    text-decoration:none;
+    font-size:11px;text-transform:uppercase;letter-spacing:.08em;
+    color:var(--buoy);margin-bottom:10px;
+  }
+  .paper-scrap.after .tag{color:var(--verdigris);}
+  .paper-scrap.after{text-decoration:none;background:#fff;border-style:solid;}
+
+  /* FEATURE LEDGER TABLE (main feature showcase) */
+  .fiche-mock{
+    margin-top:44px;
+    background:#fff;
+    border:1px solid var(--rule);
+    overflow:hidden;
+  }
+  .fiche-top{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:16px 22px;background:var(--ink);color:var(--paper);
+  }
+  .fiche-top span{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.05em;}
+  .fiche-row{
+    display:grid;grid-template-columns:1.4fr 1fr 1fr;
+    padding:14px 22px;
+    border-bottom:1px solid #efe9db;
+    font-size:14.5px;
+  }
+  .fiche-row.head{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;
+    text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);
+    background:var(--paper);
+  }
+  .fiche-row b{font-weight:600;}
+  .fiche-row .muted{color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  .fiche-history{
+    padding:18px 22px 22px;
+    background:var(--paper);
+  }
+  .fiche-history-title{font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--verdigris);margin-bottom:10px;}
+  .hist-item{display:flex;gap:14px;font-size:13.5px;padding:6px 0;color:var(--ink-soft);}
+  .hist-item .d{font-family:'IBM Plex Mono',monospace;color:var(--brass);min-width:88px;}
+
+  /* SECONDARY FEATURES as line items */
+  .line-items{margin-top:40px;}
+  .line-item{
+    display:grid;grid-template-columns:44px 1fr 1.4fr;gap:20px;
+    padding:24px 0;border-bottom:1px solid var(--rule);
+    align-items:start;
+  }
+  .line-item:last-child{border-bottom:none;}
+  .line-icon{
+    width:40px;height:40px;border:1px solid var(--ink);border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'IBM Plex Mono',monospace;font-size:15px;color:var(--ink);
+  }
+  .line-item h3{font-size:19px;font-weight:600;}
+  .line-item p{margin:8px 0 0;color:var(--ink-soft);font-size:15px;}
+
+  /* PROOF */
+  .proof{
+    display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;
+  }
+  .proof-card{
+    background:var(--ink);color:var(--paper);
+    padding:36px;position:relative;
+  }
+  .proof-card .loc{font-family:'IBM Plex Mono',monospace;font-size:12px;color:#9fb3a8;letter-spacing:.05em;text-transform:uppercase;margin-bottom:14px;}
+  .proof-card h3{font-size:24px;color:var(--paper);}
+  .proof-card p{color:#c7cfd6;margin-top:14px;font-size:15px;}
+  .proof-card a{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--brass);text-decoration:none;border-bottom:1px solid var(--brass);display:inline-block;margin-top:18px;}
+  .proof-list{font-family:'IBM Plex Mono',monospace;font-size:13.5px;color:var(--ink-soft);}
+  .proof-list div{padding:10px 0;border-bottom:1px solid var(--rule);display:flex;justify-content:space-between;}
+
+  /* CTA / FORM */
+  .cta-section{text-align:left;}
+  .form-wrap{
+    margin-top:40px;
+    display:grid;grid-template-columns:1fr 1fr;gap:16px;
+    max-width:640px;
+  }
+  .form-wrap input, .form-wrap textarea{
+    width:100%;
+    font-family:'IBM Plex Sans',sans-serif;
+    font-size:15px;
+    padding:13px 14px;
+    border:1px solid var(--ink);
+    background:#fff;
+    border-radius:2px;
+  }
+  .form-wrap textarea{grid-column:1/-1;min-height:90px;resize:vertical;}
+  .form-wrap .full{grid-column:1/-1;}
+  .form-submit{
+    grid-column:1/-1;
+    background:var(--ink);color:var(--paper);
+    border:none;padding:15px 24px;
+    font-family:'IBM Plex Mono',monospace;font-size:14px;
+    cursor:pointer;border-radius:2px;
+    width:fit-content;
+  }
+  .form-note{grid-column:1/-1;font-size:13px;color:var(--ink-soft);margin-top:-4px;}
+
+  footer{padding:32px 0;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+
+  @media (max-width:760px){
+    .hero-grid,.before-after,.proof,.form-wrap{grid-template-columns:1fr;}
+    .fiche-row{grid-template-columns:1fr;gap:4px;}
+    .fiche-row.head{display:none;}
+    .fiche-row b::before{content:"Client — ";font-weight:400;color:var(--ink-soft);}
+    .line-item{grid-template-columns:40px 1fr;}
+    .line-item > p{grid-column:2;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    #typed-name{border-right:none;}
+    .stamp{transition:none;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="brand">
+    <span class="brand-mark">Albatros</span>
+    <span class="brand-tag">// logiciel de club</span>
+  </div>
+  <a class="nav-cta" href="#contact">Demander une démo</a>
+</nav>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow">Pour les clubs de plage &amp; centres d'activités saisonniers</div>
+      <h1>Chaque client,<br><em>son histoire complète.</em></h1>
+      <p class="lede">Albatros tient à jour la fiche de chacun de vos adhérents — coordonnées, activités suivies, paiements — pour que vous n'ayez plus jamais à chercher une information sur un bout de papier.</p>
+      <div class="cta-row">
+        <a class="btn-primary" href="#contact">Demander une démo →</a>
+        <a class="btn-ghost" href="#fiche">Voir la fiche client</a>
+      </div>
+    </div>
+
+    <div class="ledger-card">
+      <div class="ledger-head"><span><span class="ledger-dot"></span>registre — clients</span><span>27/07</span></div>
+      <div class="ledger-body">
+        <div class="ledger-line"><span>Nom</span><b id="typed-name"></b></div>
+        <div class="ledger-line"><span>Activité</span><span class="mono">—</span></div>
+        <div class="ledger-line"><span>Historique</span><span class="mono">—</span></div>
+        <div class="ledger-line" style="border-bottom:none;"><span>Statut</span><span class="mono">—</span></div>
+      </div>
+      <div class="stamp" id="stamp">✓ enregistré</div>
+    </div>
+  </div>
+</header>
+
+<section id="problem">
+  <div class="wrap">
+    <div class="section-label">Le constat</div>
+    <h2 class="section-title">Un carnet, un tableur, des post-its — et rien qui se recoupe.</h2>
+    <p class="section-sub">Dans un club saisonnier, la même famille revient chaque été. Mais si l'information est éparpillée, chaque saison recommence à zéro.</p>
+    <div class="before-after">
+      <div class="paper-scrap crossed">
+        <span class="tag">Avant</span>
+        Isabelle R. — a déjà réglé ? A un enfant en niveau 2 de natation ? A un solde impayé de l'an dernier ?<br><br>
+        Personne ne sait vraiment, il faut demander à l'équipe ou fouiller le classeur.
+      </div>
+      <div class="paper-scrap after">
+        <span class="tag">Avec Albatros</span>
+        Isabelle R. — fiche ouverte en 2 secondes : ses enfants, leurs activités, son historique de paiement, tout au même endroit.
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="fiche">
+  <div class="wrap">
+    <div class="section-label">La fonctionnalité centrale</div>
+    <h2 class="section-title">La fiche client, avec tout son historique.</h2>
+    <p class="section-sub">Vous ouvrez une fiche, vous voyez tout : qui elle est, ce qu'elle a fait chez vous, ce qu'elle doit. Exemple illustratif ci-dessous.</p>
+
+    <div class="fiche-mock">
+      <div class="fiche-top"><span>FICHE CLIENT</span><span>Exemple</span></div>
+      <div class="fiche-row head"><span>Nom</span><span>Téléphone</span><span>Statut</span></div>
+      <div class="fiche-row"><b>Camille Le Bihan</b><span class="muted">06 12 34 56 78</span><span class="muted" style="color:var(--verdigris)">à jour</span></div>
+      <div class="fiche-history">
+        <div class="fiche-history-title">Historique</div>
+        <div class="hist-item"><span class="d">2025-07-14</span><span>Inscription — Mini Club, 1 semaine</span></div>
+        <div class="hist-item"><span class="d">2025-07-18</span><span>Natation — stage de 6 leçons</span></div>
+        <div class="hist-item"><span class="d">2026-06-30</span><span>Acompte reçu — 50 € (espèces)</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="wrap">
+    <div class="section-label">Et aussi</div>
+    <h2 class="section-title">Tout ce qu'il faut autour de la fiche client.</h2>
+    <div class="line-items">
+      <div class="line-item">
+        <div class="line-icon">A</div>
+        <h3>Activités &amp; planning</h3>
+        <p>Inscrivez un enfant à une activité en quelques clics et gardez la liste de qui participe à quoi.</p>
+      </div>
+      <div class="line-item">
+        <div class="line-icon">F</div>
+        <h3>Facturation &amp; acomptes</h3>
+        <p>Visualisez d'un coup d'œil qui a un solde impayé, encaissez un acompte, gardez l'historique des paiements.</p>
+      </div>
+      <div class="line-item">
+        <div class="line-icon">P</div>
+        <h3>Présence du jour</h3>
+        <p>Un compteur simple pour savoir qui est présent aujourd'hui, activité par activité.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="proof">
+  <div class="wrap proof">
+    <div class="proof-card">
+      <div class="loc">Quiberon, Bretagne</div>
+      <h3>Déjà utilisé par le Club de Plage Albatros</h3>
+      <p>Mini Club, École de Natation, Stand Up Paddle, Remise en Forme — toute la gestion clients d'un club de plage multi-activités tourne sur Albatros, saison après saison.</p>
+      <a href="https://albatros-club-de-plage.fr/" target="_blank" rel="noopener">Voir le club →</a>
+    </div>
+    <div>
+      <div class="section-label">Ce que ça gère, concrètement</div>
+      <div class="proof-list">
+        <div><span>Adultes &amp; enfants suivis</span><span>Centaines de fiches</span></div>
+        <div><span>Activités proposées</span><span>Plage, natation, paddle, fitness</span></div>
+        <div><span>Historique de paiement</span><span>Par client, par saison</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact" class="cta-section">
+  <div class="wrap">
+    <div class="section-label">Embarquer votre club</div>
+    <h2 class="section-title">Vous gérez un club de plage, une école de natation, un centre d'activités saisonnier ?</h2>
+    <p class="section-sub">Laissez-nous quelques informations, on vous montre l'outil en conditions réelles — avec vos propres activités et vos propres tarifs.</p>
+
+    <form class="form-wrap" id="contactForm">
+      <input type="text" name="nom" placeholder="Nom" required>
+      <input type="text" name="club" placeholder="Nom du club" required>
+      <input type="email" class="full" name="email" placeholder="Email" required>
+      <textarea name="message" placeholder="Quelques mots sur votre club (activités, taille, période d'ouverture...)"></textarea>
+      <button type="submit" class="form-submit">Envoyer la demande →</button>
+      <div class="form-note">Ouvre votre messagerie avec le message pré-rempli.</div>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap" style="display:flex;justify-content:space-between;width:100%;flex-wrap:wrap;gap:10px;">
+    <span>Albatros — logiciel de gestion pour clubs saisonniers</span>
+    <span>Fait pour les clubs qui n'ont pas le temps de perdre du temps.</span>
+  </div>
+</footer>
+
+<script>
+  // Hero ledger typing animation
+  const name = "Isabelle Reynal Barret";
+  const nameEl = document.getElementById('typed-name');
+  const stampEl = document.getElementById('stamp');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function typeLoop(){
+    let i = 0;
+    nameEl.textContent = "";
+    stampEl.classList.remove('show');
+    const iv = setInterval(() => {
+      if(i < name.length){
+        nameEl.textContent += name[i];
+        i++;
+      } else {
+        clearInterval(iv);
+        document.querySelectorAll('.ledger-line .mono').forEach((el,idx)=>{
+          setTimeout(()=>{
+            if(idx===0) el.textContent = "Natation — niveau 2";
+            if(idx===1) el.textContent = "3 saisons";
+            if(idx===2){ el.textContent = "à jour"; el.style.color = "var(--verdigris)"; }
+          }, idx*260);
+        });
+        setTimeout(()=> stampEl.classList.add('show'), 900);
+        setTimeout(typeLoop, 4200);
+      }
+    }, reduceMotion ? 0 : 55);
+  }
+  if(reduceMotion){
+    nameEl.textContent = name;
+    document.querySelectorAll('.ledger-line .mono')[0].textContent = "Natation — niveau 2";
+    document.querySelectorAll('.ledger-line .mono')[1].textContent = "3 saisons";
+    document.querySelectorAll('.ledger-line .mono')[2].textContent = "à jour";
+    stampEl.classList.add('show');
+  } else {
+    typeLoop();
+  }
+
+  // Contact form -> mailto
+  document.getElementById('contactForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    const data = new FormData(e.target);
+    const subject = encodeURIComponent("Demande de démo Albatros — " + data.get('club'));
+    const body = encodeURIComponent(
+      "Nom : " + data.get('nom') + "\n" +
+      "Club : " + data.get('club') + "\n" +
+      "Email : " + data.get('email') + "\n\n" +
+      "Message :\n" + data.get('message')
+    );
+    window.location.href = "mailto:contact@albatros-app.fr?subject=" + subject + "&body=" + body;
+  });
+</script>
+
+</body>
+</html>
